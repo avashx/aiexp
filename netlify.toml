@@ -1,9 +1,0 @@
-[build]
-  functions = "netlify/functions"  # Location of Netlify Functions
-  publish = "frontend"             # Frontend directory (where static files are)
-
-[[redirects]]
-  from = "/describe-image"         # URL endpoint to call the function
-  to = "/.netlify/functions/describeImage"  # Where the function is located
-  status = 200
-  force = true
