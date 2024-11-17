@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Description with ChatGPT</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #camera { border: 1px solid #ccc; margin-bottom: 20px; }
+        #description { font-size: 1.2em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Image Description with ChatGPT AI</h1>
+    <video id="camera" width="640" height="480" autoplay></video><br>
+    <button onclick="captureImage()">Capture Image</button>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <div id="description"></div>
+    <button onclick="speakDescription()">Speak Description</button>
+
+    <script>
+        // Initialize webcam
+        const videoElement = document.getElementById('camera');
+        const canvas = document.getElementById('canvas');
+        const descriptionElement = document.getElementById('description');
+
+        // Start video stream
+        async function startWebcam() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            videoElement.srcObject = stream;
+        }
+
+        // Capture image from webcam
+        function captureImage() {
+            const context = canvas.getContext('2d');
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            // Send the image to the backend for description
+            const imageData = canvas.toDataURL('image/jpeg');
+            fetch('/describe-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                descriptionElement.textContent = data.description;
+            });
+        }
+
+        // Speak the description
+        function speakDescription() {
+            const description = descriptionElement.textContent;
+            if (description) {
+                const utterance = new SpeechSynthesisUtterance(description);
+                speechSynthesis.speak(utterance);
+            } else {
+                alert("No description available.");
+            }
+        }
+
+        startWebcam();
+    </script>
+</body>
+</html>
