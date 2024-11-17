@@ -1,1 +1,98 @@
-<h1>Hi</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Description with ChatGPT</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f4f8;
+}
+
+.container {
+  text-align: center;
+}
+
+input[type="file"] {
+  margin: 10px 0;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#descriptionContainer {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Upload an Image for Description</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <button id="uploadBtn">Upload and Describe</button>
+    <div id="descriptionContainer">
+      <p id="description">Your image description will appear here...</p>
+    </div>
+  </div>
+
+  <script>
+
+document.getElementById('uploadBtn').addEventListener('click', async function() {
+  const fileInput = document.getElementById('imageInput');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please upload an image first.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const response = await fetch('/api/describe-image', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch description');
+    }
+
+    const data = await response.json();
+    document.getElementById('description').textContent = data.description || "No description available.";
+  } catch (error) {
+    console.error('Error:', error);
+    document.getElementById('description').textContent = "An error occurred. Please try again.";
+  }
+});
+
+
+  </script>
+</body>
+</html>
