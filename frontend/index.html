@@ -19,25 +19,21 @@
     <button onclick="speakDescription()">Speak Description</button>
 
     <script>
-        // Initialize webcam
         const videoElement = document.getElementById('camera');
         const canvas = document.getElementById('canvas');
         const descriptionElement = document.getElementById('description');
 
-        // Start video stream
         async function startWebcam() {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             videoElement.srcObject = stream;
         }
 
-        // Capture image from webcam
         function captureImage() {
             const context = canvas.getContext('2d');
             context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-            // Send the image to the backend for description
             const imageData = canvas.toDataURL('image/jpeg');
-            fetch('/describe-image', {
+
+            fetch('/.netlify/functions/describeImage', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,7 +46,6 @@
             });
         }
 
-        // Speak the description
         function speakDescription() {
             const description = descriptionElement.textContent;
             if (description) {
